@@ -1,0 +1,163 @@
+﻿using System;
+using System.Collections.Generic;
+using DAL.EF.Table;
+using Microsoft.EntityFrameworkCore;
+
+namespace DAL.EF;
+
+public partial class SmartClinicContext : DbContext
+{
+    public SmartClinicContext()
+    {
+    }
+
+    public SmartClinicContext(DbContextOptions<SmartClinicContext> options)
+        : base(options)
+    {
+    }
+
+    public virtual DbSet<Appointment> Appointments { get; set; }
+
+    public virtual DbSet<Doctor> Doctors { get; set; }
+
+    public virtual DbSet<Invoice> Invoices { get; set; }
+
+    public virtual DbSet<Notification> Notifications { get; set; }
+
+    public virtual DbSet<Patient> Patients { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        => optionsBuilder.UseSqlServer("Name=DbConn");
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Appointment>(entity =>
+        {
+            entity.ToTable("Appointment");
+
+            entity.Property(e => e.AppointmentId)
+                .ValueGeneratedNever()
+                .HasColumnName("AppointmentID");
+            entity.Property(e => e.AppointmentDate).HasColumnType("datetime");
+            entity.Property(e => e.DoctorId).HasColumnName("DoctorID");
+            entity.Property(e => e.PatientId).HasColumnName("PatientID");
+            entity.Property(e => e.Status)
+                .HasMaxLength(20)
+                .IsUnicode(false);
+            entity.Property(e => e.SymptomsNotes).HasColumnName("Symptoms_Notes");
+
+            entity.HasOne(d => d.Doctor).WithMany(p => p.Appointments)
+                .HasForeignKey(d => d.DoctorId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Appointment_Doctor");
+
+            entity.HasOne(d => d.Patient).WithMany(p => p.Appointments)
+                .HasForeignKey(d => d.PatientId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Appointment_Patient");
+        });
+
+        modelBuilder.Entity<Doctor>(entity =>
+        {
+            entity.ToTable("Doctor");
+
+            entity.Property(e => e.DoctorId)
+                .ValueGeneratedNever()
+                .HasColumnName("DoctorID");
+            entity.Property(e => e.ConsultationFee).HasColumnType("decimal(10, 2)");
+            entity.Property(e => e.Email)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.FirstName)
+                .HasMaxLength(50)
+                .HasColumnName("FirstNAME");
+            entity.Property(e => e.LastName)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("LastNAME");
+            entity.Property(e => e.Speciality)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<Invoice>(entity =>
+        {
+            entity.ToTable("Invoice");
+
+            entity.Property(e => e.InvoiceId)
+                .ValueGeneratedNever()
+                .HasColumnName("InvoiceID");
+            entity.Property(e => e.AppointmentId).HasColumnName("AppointmentID");
+            entity.Property(e => e.BaseAmount).HasColumnType("decimal(10, 2)");
+            entity.Property(e => e.Discount).HasColumnType("decimal(10, 2)");
+            entity.Property(e => e.GeneratedAt).HasColumnType("datetime");
+            entity.Property(e => e.PaymentStatus)
+                .HasMaxLength(20)
+                .IsUnicode(false);
+            entity.Property(e => e.TaxAmount).HasColumnType("decimal(10, 2)");
+            entity.Property(e => e.TotalAmount).HasColumnType("decimal(10, 2)");
+
+            entity.HasOne(d => d.Appointment).WithMany(p => p.Invoices)
+                .HasForeignKey(d => d.AppointmentId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Invoice_Appointment");
+        });
+
+        modelBuilder.Entity<Notification>(entity =>
+        {
+            entity.ToTable("Notification");
+
+            entity.Property(e => e.NotificationId)
+                .ValueGeneratedNever()
+                .HasColumnName("NotificationID");
+            entity.Property(e => e.DoctorId).HasColumnName("DoctorID");
+            entity.Property(e => e.Message).HasMaxLength(200);
+            entity.Property(e => e.PatientId).HasColumnName("PatientID");
+            entity.Property(e => e.ScheduledTime).HasColumnType("datetime");
+            entity.Property(e => e.SendStatus)
+                .HasMaxLength(20)
+                .IsUnicode(false);
+            entity.Property(e => e.Type)
+                .HasMaxLength(20)
+                .IsUnicode(false);
+
+            entity.HasOne(d => d.Doctor).WithMany(p => p.Notifications)
+                .HasForeignKey(d => d.DoctorId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Notification_Doctor");
+
+            entity.HasOne(d => d.Patient).WithMany(p => p.Notifications)
+                .HasForeignKey(d => d.PatientId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Notification_Patient");
+        });
+
+        modelBuilder.Entity<Patient>(entity =>
+        {
+            entity.ToTable("Patient");
+
+            entity.Property(e => e.PatientId)
+                .ValueGeneratedNever()
+                .HasColumnName("PatientID");
+            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+            entity.Property(e => e.Dob).HasColumnName("DOB");
+            entity.Property(e => e.Email)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.FirstName)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("FirstNAME");
+            entity.Property(e => e.LastName)
+                .HasMaxLength(50)
+                .HasColumnName("LastNAME");
+            entity.Property(e => e.Phone)
+                .HasMaxLength(20)
+                .IsUnicode(false);
+        });
+
+        OnModelCreatingPartial(modelBuilder);
+    }
+
+    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+}
