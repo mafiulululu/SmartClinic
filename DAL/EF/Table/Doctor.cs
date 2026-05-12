@@ -7,7 +7,7 @@ public partial class Doctor
 {
     public int DoctorId { get; set; }
 
-    public byte[] FirstName { get; set; } = null!;
+    public string FirstName { get; set; } = null!;
 
     public string LastName { get; set; } = null!;
 

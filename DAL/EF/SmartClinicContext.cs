@@ -70,6 +70,7 @@ public partial class SmartClinicContext : DbContext
                 .IsUnicode(false);
             entity.Property(e => e.FirstName)
                 .HasMaxLength(50)
+                .IsUnicode(false)
                 .HasColumnName("FirstNAME");
             entity.Property(e => e.LastName)
                 .HasMaxLength(50)
