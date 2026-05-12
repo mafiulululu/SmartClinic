@@ -26,6 +26,8 @@ public partial class SmartClinicContext : DbContext
 
     public virtual DbSet<Patient> Patients { get; set; }
 
+    public virtual DbSet<User> Users { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer("Name=DbConn");
 
@@ -155,6 +157,22 @@ public partial class SmartClinicContext : DbContext
             entity.Property(e => e.Phone)
                 .HasMaxLength(20)
                 .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.HasKey(e => e.UserId).HasName("PK__Users__1788CCACB8424627");
+
+            entity.HasIndex(e => e.Email, "UQ__Users__A9D10534C26179A8").IsUnique();
+
+            entity.Property(e => e.UserId).HasColumnName("UserID");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.Email).HasMaxLength(100);
+            entity.Property(e => e.FullName).HasMaxLength(100);
+            entity.Property(e => e.PasswordHash).HasMaxLength(255);
+            entity.Property(e => e.Role).HasMaxLength(20);
         });
 
         OnModelCreatingPartial(modelBuilder);

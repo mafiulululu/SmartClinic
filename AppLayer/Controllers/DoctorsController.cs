@@ -2,6 +2,7 @@
 using DAL.EF.Table;
 using Microsoft.AspNetCore.Mvc;
 
+
 namespace SmartClinic.Web.Controllers
 {
     public class DoctorsController : Controller
