@@ -1,0 +1,12 @@
+﻿@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="container mt-4">
+    <h2>Admin Dashboard</h2>
+    <p>Welcome, @User.Identity?.Name</p>
+
+    <a asp-controller="Doctors" asp-action="Index" class="btn btn-primary">
+        Manage Doctors
+    </a>
+</div>

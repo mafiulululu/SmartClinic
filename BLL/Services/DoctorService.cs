@@ -17,11 +17,34 @@ namespace BLL.Services
             return await _doctorRepository.GetAllDoctorsAsync();
         }
 
-        
+        public async Task<Doctor?> GetDoctorByIdAsync(int id)
+        {
+            return await _doctorRepository.GetDoctorByIdAsync(id);
+        }
+
         public async Task CreateDoctorAsync(Doctor doctor)
         {
-            
+            doctor.FirstName = doctor.FirstName.Trim();
+            doctor.LastName = doctor.LastName.Trim();
+            doctor.Speciality = doctor.Speciality.Trim();
+            doctor.Email = doctor.Email.Trim().ToLower();
+
             await _doctorRepository.AddDoctorAsync(doctor);
+        }
+
+        public async Task UpdateDoctorAsync(Doctor doctor)
+        {
+            doctor.FirstName = doctor.FirstName.Trim();
+            doctor.LastName = doctor.LastName.Trim();
+            doctor.Speciality = doctor.Speciality.Trim();
+            doctor.Email = doctor.Email.Trim().ToLower();
+
+            await _doctorRepository.UpdateDoctorAsync(doctor);
+        }
+
+        public async Task DeleteDoctorAsync(int id)
+        {
+            await _doctorRepository.DeleteDoctorAsync(id);
         }
     }
 }

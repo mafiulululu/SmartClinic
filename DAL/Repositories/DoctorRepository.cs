@@ -15,13 +15,54 @@ namespace DAL.Repositories
 
         public async Task<IEnumerable<Doctor>> GetAllDoctorsAsync()
         {
-            return await _context.Doctors.ToListAsync();
+            return await _context.Doctors
+                .OrderBy(d => d.FirstName)
+                .ToListAsync();
         }
 
-        // Saves a new doctor to the database
+        public async Task<Doctor?> GetDoctorByIdAsync(int id)
+        {
+            return await _context.Doctors
+                .FirstOrDefaultAsync(d => d.DoctorId == id);
+        }
+
         public async Task AddDoctorAsync(Doctor doctor)
         {
             await _context.Doctors.AddAsync(doctor);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateDoctorAsync(Doctor doctor)
+        {
+            var existingDoctor = await _context.Doctors
+                .FirstOrDefaultAsync(d => d.DoctorId == doctor.DoctorId);
+
+            if (existingDoctor == null)
+            {
+                return;
+            }
+
+            existingDoctor.FirstName = doctor.FirstName;
+            existingDoctor.LastName = doctor.LastName;
+            existingDoctor.Speciality = doctor.Speciality;
+            existingDoctor.ConsultationFee = doctor.ConsultationFee;
+            existingDoctor.Email = doctor.Email;
+            existingDoctor.IsAvailable = doctor.IsAvailable;
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteDoctorAsync(int id)
+        {
+            var doctor = await _context.Doctors
+                .FirstOrDefaultAsync(d => d.DoctorId == id);
+
+            if (doctor == null)
+            {
+                return;
+            }
+
+            _context.Doctors.Remove(doctor);
             await _context.SaveChangesAsync();
         }
     }

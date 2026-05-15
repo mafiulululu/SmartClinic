@@ -35,11 +35,11 @@ public partial class SmartClinicContext : DbContext
     {
         modelBuilder.Entity<Appointment>(entity =>
         {
+            entity.HasKey(e => e.AppointmentId).HasName("PK__Appointm__8ECDFCA23652E34C");
+
             entity.ToTable("Appointment");
 
-            entity.Property(e => e.AppointmentId)
-                .ValueGeneratedNever()
-                .HasColumnName("AppointmentID");
+            entity.Property(e => e.AppointmentId).HasColumnName("AppointmentID");
             entity.Property(e => e.AppointmentDate).HasColumnType("datetime");
             entity.Property(e => e.DoctorId).HasColumnName("DoctorID");
             entity.Property(e => e.PatientId).HasColumnName("PatientID");
@@ -61,11 +61,11 @@ public partial class SmartClinicContext : DbContext
 
         modelBuilder.Entity<Doctor>(entity =>
         {
+            entity.HasKey(e => e.DoctorId).HasName("PK__Doctor__2DC00EDFE47C8F6F");
+
             entity.ToTable("Doctor");
 
-            entity.Property(e => e.DoctorId)
-                .ValueGeneratedNever()
-                .HasColumnName("DoctorID");
+            entity.Property(e => e.DoctorId).HasColumnName("DoctorID");
             entity.Property(e => e.ConsultationFee).HasColumnType("decimal(10, 2)");
             entity.Property(e => e.Email)
                 .HasMaxLength(100)
@@ -74,6 +74,7 @@ public partial class SmartClinicContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("FirstNAME");
+            entity.Property(e => e.IsAvailable).HasDefaultValue(true);
             entity.Property(e => e.LastName)
                 .HasMaxLength(50)
                 .IsUnicode(false)
@@ -85,15 +86,17 @@ public partial class SmartClinicContext : DbContext
 
         modelBuilder.Entity<Invoice>(entity =>
         {
+            entity.HasKey(e => e.InvoiceId).HasName("PK__Invoice__D796AAD545F26F53");
+
             entity.ToTable("Invoice");
 
-            entity.Property(e => e.InvoiceId)
-                .ValueGeneratedNever()
-                .HasColumnName("InvoiceID");
+            entity.Property(e => e.InvoiceId).HasColumnName("InvoiceID");
             entity.Property(e => e.AppointmentId).HasColumnName("AppointmentID");
             entity.Property(e => e.BaseAmount).HasColumnType("decimal(10, 2)");
             entity.Property(e => e.Discount).HasColumnType("decimal(10, 2)");
-            entity.Property(e => e.GeneratedAt).HasColumnType("datetime");
+            entity.Property(e => e.GeneratedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
             entity.Property(e => e.PaymentStatus)
                 .HasMaxLength(20)
                 .IsUnicode(false);
@@ -108,11 +111,11 @@ public partial class SmartClinicContext : DbContext
 
         modelBuilder.Entity<Notification>(entity =>
         {
+            entity.HasKey(e => e.NotificationId).HasName("PK__Notifica__20CF2E325097FE6A");
+
             entity.ToTable("Notification");
 
-            entity.Property(e => e.NotificationId)
-                .ValueGeneratedNever()
-                .HasColumnName("NotificationID");
+            entity.Property(e => e.NotificationId).HasColumnName("NotificationID");
             entity.Property(e => e.DoctorId).HasColumnName("DoctorID");
             entity.Property(e => e.Message).HasMaxLength(200);
             entity.Property(e => e.PatientId).HasColumnName("PatientID");
@@ -137,12 +140,14 @@ public partial class SmartClinicContext : DbContext
 
         modelBuilder.Entity<Patient>(entity =>
         {
+            entity.HasKey(e => e.PatientId).HasName("PK__Patient__970EC34692901830");
+
             entity.ToTable("Patient");
 
-            entity.Property(e => e.PatientId)
-                .ValueGeneratedNever()
-                .HasColumnName("PatientID");
-            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+            entity.Property(e => e.PatientId).HasColumnName("PatientID");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
             entity.Property(e => e.Dob).HasColumnName("DOB");
             entity.Property(e => e.Email)
                 .HasMaxLength(50)
@@ -153,6 +158,7 @@ public partial class SmartClinicContext : DbContext
                 .HasColumnName("FirstNAME");
             entity.Property(e => e.LastName)
                 .HasMaxLength(50)
+                .IsUnicode(false)
                 .HasColumnName("LastNAME");
             entity.Property(e => e.Phone)
                 .HasMaxLength(20)
@@ -167,10 +173,12 @@ public partial class SmartClinicContext : DbContext
 
             entity.Property(e => e.UserId).HasColumnName("UserID");
             entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("(getdate())")
+                .HasDefaultValueSql("(getdate())", "DF__Users__CreatedAt__628FA481")
                 .HasColumnType("datetime");
             entity.Property(e => e.Email).HasMaxLength(100);
-            entity.Property(e => e.FullName).HasMaxLength(100);
+            entity.Property(e => e.FullName)
+                .HasMaxLength(50)
+                .IsUnicode(false);
             entity.Property(e => e.PasswordHash).HasMaxLength(255);
             entity.Property(e => e.Role).HasMaxLength(20);
         });

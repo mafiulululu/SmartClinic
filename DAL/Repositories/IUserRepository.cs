@@ -6,5 +6,6 @@ namespace DAL.Repositories
     {
         Task AddUserAsync(User user);
         Task<bool> EmailExistsAsync(string email);
+        Task<User?> GetUserByEmailAsync(string email);
     }
 }

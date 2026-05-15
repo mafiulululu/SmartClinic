@@ -1,7 +1,10 @@
 ﻿using BLL.Services;
 using DAL.EF.Table;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using SmartClinic.Web.ViewModels;
+using System.Security.Claims;
 
 namespace SmartClinic.Web.Controllers
 {
@@ -9,94 +12,129 @@ namespace SmartClinic.Web.Controllers
     {
         private readonly IAuthService _authService;
 
-        // Inject the BLL service
         public AccountController(IAuthService authService)
         {
             _authService = authService;
         }
 
-        // GET: /Account/Login (Loads the blank login page)
         [HttpGet]
         public IActionResult Login()
         {
             return View();
         }
 
-        // POST: /Account/Login (Processes the login attempt)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Login(LoginViewModel model)
+        public async Task<IActionResult> Login(LoginViewModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                // In a real app, you would validate against the database here.
-                // For now, we simulate a successful login and handle the routing:
-                switch (model.Role)
-                {
-                    case "Admin":
-                        // Redirects to an AdminDashboard controller
-                        return RedirectToAction("Index", "AdminDashboard");
-
-                    case "Doctor":
-                        // Redirects to the Doctors controller you already built!
-                        return RedirectToAction("Index", "Doctors");
-
-                    case "Patient":
-                        // Redirects to a PatientDashboard controller
-                        return RedirectToAction("Index", "PatientDashboard");
-
-                    default:
-                        ModelState.AddModelError("", "Invalid role selected.");
-                        break;
-                }
+                return View(model);
             }
 
-            // If validation fails, reload the page with the error messages
-            return View(model);
+            var user = await _authService.LoginUserAsync(
+                model.Email,
+                model.Password,
+                model.Role
+            );
+
+            if (user == null)
+            {
+                ModelState.AddModelError("", "Invalid email, password, or role.");
+                return View(model);
+            }
+
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+                new Claim(ClaimTypes.Name, user.FullName),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Role, user.Role)
+            };
+
+            var identity = new ClaimsIdentity(
+                claims,
+                CookieAuthenticationDefaults.AuthenticationScheme
+            );
+
+            var principal = new ClaimsPrincipal(identity);
+
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                principal
+            );
+
+            if (user.Role == "Admin")
+            {
+                return RedirectToAction("Index", "AdminDashboard");
+            }
+
+            if (user.Role == "Doctor")
+            {
+                return RedirectToAction("Index", "DoctorDashboard");
+            }
+
+            if (user.Role == "Patient")
+            {
+                return RedirectToAction("Index", "PatientDashboard");
+            }
+
+            return RedirectToAction("Index", "Home");
         }
 
-        // GET: /Account/Register
         [HttpGet]
         public IActionResult Register()
         {
             return View();
         }
 
-        // POST: /Account/Register
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                // Map the ViewModel data to the actual Database Model
-                var newUser = new User
-                {
-                    FullName = model.FullName,
-                    Email = model.Email,
-                    Role = model.Role,
-                    // Note: In a production app, you MUST encrypt this password using BCrypt or Identity!
-                    // We are saving it directly here to keep the architecture simple for your project.
-                    PasswordHash = model.Password,
-                    CreatedAt = DateTime.Now
-                };
-
-                // Send to the BLL
-                bool isSuccess = await _authService.RegisterUserAsync(newUser);
-
-                if (isSuccess)
-                {
-                    // If successful, send them to the login page!
-                    return RedirectToAction("Login", "Account");
-                }
-                else
-                {
-                    ModelState.AddModelError("Email", "This email is already registered.");
-                }
+                return View(model);
             }
 
-            // If validation fails, reload the form with errors
+            var newUser = new User
+            {
+                FullName = model.FullName,
+                Email = model.Email,
+                Role = model.Role,
+
+                // Plain password goes to BLL.
+                // BLL will hash it before saving.
+                PasswordHash = model.Password
+            };
+
+            bool isSuccess = await _authService.RegisterUserAsync(newUser);
+
+            if (isSuccess)
+            {
+                TempData["SuccessMessage"] = "Registration successful. Please login.";
+                return RedirectToAction("Login", "Account");
+            }
+
+            ModelState.AddModelError("Email", "This email is already registered or the role is invalid.");
             return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme
+            );
+
+            return RedirectToAction("Login", "Account");
+        }
+
+        [HttpGet]
+        public IActionResult AccessDenied()
+        {
+            return View();
         }
     }
 }

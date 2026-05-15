@@ -1,0 +1,99 @@
+﻿@model IEnumerable<DAL.EF.Table.Doctor>
+
+@{
+    ViewData["Title"] = "Doctors";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h2 class="mb-0">Doctors</h2>
+            <p class="text-muted mb-0">Manage clinic doctors and availability</p>
+        </div>
+
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="Create" class="btn btn-primary">
+                + Add Doctor
+            </a>
+        }
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            @if (Model.Any())
+            {
+                <table class="table table-bordered table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Doctor ID</th>
+                            <th>Name</th>
+                            <th>Speciality</th>
+                            <th>Consultation Fee</th>
+                            <th>Email</th>
+                            <th>Availability</th>
+
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <th style="width: 180px;">Actions</th>
+                            }
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var doctor in Model)
+                        {
+                            <tr>
+                                <td>@doctor.DoctorId</td>
+                                <td>Dr. @doctor.FirstName @doctor.LastName</td>
+                                <td>@doctor.Speciality</td>
+                                <td>@doctor.ConsultationFee.ToString("0.00")</td>
+                                <td>@doctor.Email</td>
+                                <td>
+                                    @if (doctor.IsAvailable)
+                                    {
+                                        <span class="badge bg-success">Available</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">Unavailable</span>
+                                    }
+                                </td>
+
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <td>
+                                        <a asp-action="Edit"
+                                               asp-route-id="@doctor.DoctorId"
+                                               class="btn btn-sm btn-warning">
+                                            Edit
+                                        </a>
+
+                                        <a asp-action="Delete"
+                                               asp-route-id="@doctor.DoctorId"
+                                               class="btn btn-sm btn-danger">
+                                            Delete
+                                        </a>
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="alert alert-info mb-0">
+                    No doctors found. Please add a doctor first.
+                </div>
+            }
+        </div>
+    </div>
+</div>
