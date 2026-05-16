@@ -1,0 +1,54 @@
+﻿@model IEnumerable<DAL.EF.Table.Appointment>
+
+@{
+    ViewData["Title"] = "Doctor Appointments";
+}
+
+<div class="container mt-4">
+    <h2>My Doctor Appointments</h2>
+    <p class="text-muted">Appointments booked with you.</p>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            @if (Model.Any())
+            {
+                <table class="table table-bordered table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Appointment ID</th>
+                            <th>Patient</th>
+                            <th>Patient Email</th>
+                            <th>Date & Time</th>
+                            <th>Status</th>
+                            <th>Symptoms / Notes</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.AppointmentId</td>
+                                <td>@item.Patient.FirstName @item.Patient.LastName</td>
+                                <td>@item.Patient.Email</td>
+                                <td>@item.AppointmentDate.ToString("yyyy-MM-dd hh:mm tt")</td>
+                                <td>
+                                    <span class="badge bg-warning text-dark">
+                                        @item.Status
+                                    </span>
+                                </td>
+                                <td>@item.SymptomsNotes</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="alert alert-info mb-0">
+                    No appointments found for you.
+                </div>
+            }
+        </div>
+    </div>
+</div>

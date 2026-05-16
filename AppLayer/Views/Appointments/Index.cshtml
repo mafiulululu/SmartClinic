@@ -1,0 +1,56 @@
+﻿@model IEnumerable<DAL.EF.Table.Appointment>
+
+@{
+    ViewData["Title"] = "All Appointments";
+}
+
+<div class="container mt-4">
+    <h2>All Appointments</h2>
+    <p class="text-muted">Admin overview of all clinic appointments.</p>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            @if (Model.Any())
+            {
+                <table class="table table-bordered table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Appointment ID</th>
+                            <th>Patient</th>
+                            <th>Doctor</th>
+                            <th>Speciality</th>
+                            <th>Date & Time</th>
+                            <th>Status</th>
+                            <th>Symptoms / Notes</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.AppointmentId</td>
+                                <td>@item.Patient.FirstName @item.Patient.LastName</td>
+                                <td>Dr. @item.Doctor.FirstName @item.Doctor.LastName</td>
+                                <td>@item.Doctor.Speciality</td>
+                                <td>@item.AppointmentDate.ToString("yyyy-MM-dd hh:mm tt")</td>
+                                <td>
+                                    <span class="badge bg-warning text-dark">
+                                        @item.Status
+                                    </span>
+                                </td>
+                                <td>@item.SymptomsNotes</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="alert alert-info mb-0">
+                    No appointments found.
+                </div>
+            }
+        </div>
+    </div>
+</div>

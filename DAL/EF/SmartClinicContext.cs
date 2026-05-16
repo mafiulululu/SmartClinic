@@ -39,7 +39,9 @@ public partial class SmartClinicContext : DbContext
 
             entity.ToTable("Appointment");
 
-            entity.Property(e => e.AppointmentId).HasColumnName("AppointmentID");
+            entity.Property(e => e.AppointmentId)
+                .ValueGeneratedOnAdd()
+                .HasColumnName("AppointmentID");
             entity.Property(e => e.AppointmentDate).HasColumnType("datetime");
             entity.Property(e => e.DoctorId).HasColumnName("DoctorID");
             entity.Property(e => e.PatientId).HasColumnName("PatientID");

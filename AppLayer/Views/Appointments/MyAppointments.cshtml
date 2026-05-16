@@ -1,0 +1,69 @@
+﻿@model IEnumerable<DAL.EF.Table.Appointment>
+
+@{
+    ViewData["Title"] = "My Appointments";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h2>My Appointments</h2>
+            <p class="text-muted mb-0">View your appointment history and upcoming bookings.</p>
+        </div>
+
+        <a asp-action="Create" class="btn btn-primary">
+            + Book New Appointment
+        </a>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            @if (Model.Any())
+            {
+                <table class="table table-bordered table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Appointment ID</th>
+                            <th>Doctor</th>
+                            <th>Speciality</th>
+                            <th>Date & Time</th>
+                            <th>Status</th>
+                            <th>Symptoms / Notes</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.AppointmentId</td>
+                                <td>Dr. @item.Doctor.FirstName @item.Doctor.LastName</td>
+                                <td>@item.Doctor.Speciality</td>
+                                <td>@item.AppointmentDate.ToString("yyyy-MM-dd hh:mm tt")</td>
+                                <td>
+                                    <span class="badge bg-warning text-dark">
+                                        @item.Status
+                                    </span>
+                                </td>
+                                <td>@item.SymptomsNotes</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="alert alert-info mb-0">
+                    You have no appointments yet.
+                </div>
+            }
+        </div>
+    </div>
+</div>
