@@ -20,6 +20,41 @@ namespace DAL.Repositories
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<Doctor>> SearchDoctorsAsync(
+            string? speciality,
+            decimal? minFee,
+            decimal? maxFee,
+            bool availableOnly
+        )
+        {
+            var query = _context.Doctors.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(speciality))
+            {
+                query = query.Where(d =>
+                    Microsoft.EntityFrameworkCore.EF.Functions.Like(d.Speciality, $"%{speciality}%"));
+            }
+
+            if (minFee.HasValue)
+            {
+                query = query.Where(d => d.ConsultationFee >= minFee.Value);
+            }
+
+            if (maxFee.HasValue)
+            {
+                query = query.Where(d => d.ConsultationFee <= maxFee.Value);
+            }
+
+            if (availableOnly)
+            {
+                query = query.Where(d => d.IsAvailable == true);
+            }
+
+            return await query
+                .OrderBy(d => d.FirstName)
+                .ToListAsync();
+        }
+
         public async Task<Doctor?> GetDoctorByIdAsync(int id)
         {
             return await _context.Doctors

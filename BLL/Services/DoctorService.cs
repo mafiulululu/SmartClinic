@@ -17,6 +17,40 @@ namespace BLL.Services
             return await _doctorRepository.GetAllDoctorsAsync();
         }
 
+        public async Task<IEnumerable<Doctor>> SearchDoctorsAsync(
+            string? speciality,
+            decimal? minFee,
+            decimal? maxFee,
+            bool availableOnly
+        )
+        {
+            speciality = speciality?.Trim();
+
+            if (minFee.HasValue && minFee.Value < 0)
+            {
+                minFee = 0;
+            }
+
+            if (maxFee.HasValue && maxFee.Value < 0)
+            {
+                maxFee = null;
+            }
+
+            if (minFee.HasValue && maxFee.HasValue && minFee.Value > maxFee.Value)
+            {
+                var temp = minFee;
+                minFee = maxFee;
+                maxFee = temp;
+            }
+
+            return await _doctorRepository.SearchDoctorsAsync(
+                speciality,
+                minFee,
+                maxFee,
+                availableOnly
+            );
+        }
+
         public async Task<Doctor?> GetDoctorByIdAsync(int id)
         {
             return await _doctorRepository.GetDoctorByIdAsync(id);

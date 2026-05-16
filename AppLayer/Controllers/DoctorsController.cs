@@ -16,9 +16,25 @@ namespace SmartClinic.Web.Controllers
 
         // Admin, Doctor, Patient all can view doctor list
         [Authorize(Roles = "Admin,Doctor,Patient")]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(
+            string? speciality,
+            decimal? minFee,
+            decimal? maxFee,
+            bool availableOnly = false
+        )
         {
-            var doctors = await _doctorService.GetDoctorsListAsync();
+            var doctors = await _doctorService.SearchDoctorsAsync(
+                speciality,
+                minFee,
+                maxFee,
+                availableOnly
+            );
+
+            ViewBag.Speciality = speciality;
+            ViewBag.MinFee = minFee;
+            ViewBag.MaxFee = maxFee;
+            ViewBag.AvailableOnly = availableOnly;
+
             return View(doctors);
         }
 

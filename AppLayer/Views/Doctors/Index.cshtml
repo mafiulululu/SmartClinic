@@ -8,7 +8,7 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
             <h2 class="mb-0">Doctors</h2>
-            <p class="text-muted mb-0">Manage clinic doctors and availability</p>
+            <p class="text-muted mb-0">Search doctors by speciality, fee, and availability</p>
         </div>
 
         @if (User.IsInRole("Admin"))
@@ -26,7 +26,77 @@
         </div>
     }
 
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light">
+            <strong>Search & Filter Doctors</strong>
+        </div>
+
+        <div class="card-body">
+            <form asp-action="Index" method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Speciality</label>
+                    <input type="text"
+                           name="speciality"
+                           value="@ViewBag.Speciality"
+                           class="form-control"
+                           placeholder="Example: Cardiology" />
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Minimum Fee</label>
+                    <input type="number"
+                           name="minFee"
+                           value="@ViewBag.MinFee"
+                           class="form-control"
+                           step="0.01"
+                           placeholder="Example: 500" />
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Maximum Fee</label>
+                    <input type="number"
+                           name="maxFee"
+                           value="@ViewBag.MaxFee"
+                           class="form-control"
+                           step="0.01"
+                           placeholder="Example: 1500" />
+                </div>
+
+                <div class="col-md-2 d-flex align-items-end">
+                    <div class="form-check mb-2">
+                        <input class="form-check-input"
+                               type="checkbox"
+                               name="availableOnly"
+                               value="true"
+                        @(ViewBag.AvailableOnly == true ? "checked" : "") />
+
+                        <label class="form-check-label">
+                            Available only
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <button type="submit" class="btn btn-success">
+                        Search
+                    </button>
+
+                    <a asp-action="Index" class="btn btn-secondary ms-2">
+                        Clear
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div class="card shadow-sm">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <strong>Doctor List</strong>
+            <span class="badge bg-info text-dark">
+                Total Found: @Model.Count()
+            </span>
+        </div>
+
         <div class="card-body">
             @if (Model.Any())
             {
@@ -71,14 +141,14 @@
                                 {
                                     <td>
                                         <a asp-action="Edit"
-                                               asp-route-id="@doctor.DoctorId"
-                                               class="btn btn-sm btn-warning">
+                                           asp-route-id="@doctor.DoctorId"
+                                           class="btn btn-sm btn-warning">
                                             Edit
                                         </a>
 
                                         <a asp-action="Delete"
-                                               asp-route-id="@doctor.DoctorId"
-                                               class="btn btn-sm btn-danger">
+                                           asp-route-id="@doctor.DoctorId"
+                                           class="btn btn-sm btn-danger">
                                             Delete
                                         </a>
                                     </td>
@@ -91,7 +161,7 @@
             else
             {
                 <div class="alert alert-info mb-0">
-                    No doctors found. Please add a doctor first.
+                    No doctors found for your search criteria.
                 </div>
             }
         </div>
