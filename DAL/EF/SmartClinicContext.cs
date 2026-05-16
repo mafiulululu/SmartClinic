@@ -140,26 +140,33 @@ public partial class SmartClinicContext : DbContext
 
         modelBuilder.Entity<Patient>(entity =>
         {
-            entity.HasKey(e => e.PatientId).HasName("PK__Patient__970EC34692901830");
-
             entity.ToTable("Patient");
 
-            entity.Property(e => e.PatientId).HasColumnName("PatientID");
+            entity.Property(e => e.PatientId)
+                .ValueGeneratedOnAdd()
+                .HasColumnName("PatientID");
+
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
-            entity.Property(e => e.Dob).HasColumnName("DOB");
+
+            entity.Property(e => e.Dob)
+                .HasColumnName("DOB");
+
             entity.Property(e => e.Email)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+
             entity.Property(e => e.FirstName)
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("FirstNAME");
+
             entity.Property(e => e.LastName)
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("LastNAME");
+
             entity.Property(e => e.Phone)
                 .HasMaxLength(20)
                 .IsUnicode(false);
