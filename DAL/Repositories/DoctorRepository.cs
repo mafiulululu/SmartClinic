@@ -32,7 +32,7 @@ namespace DAL.Repositories
             if (!string.IsNullOrWhiteSpace(speciality))
             {
                 query = query.Where(d =>
-                    EF.Functions.Like(d.Speciality, $"%{speciality}%"));
+                    Microsoft.EntityFrameworkCore.EF.Functions.Like(d.Speciality, $"%{speciality}%"));
             }
 
             if (minFee.HasValue)
