@@ -19,13 +19,23 @@ namespace SmartClinic.Web.ViewModels
         [Required(ErrorMessage = "Role is required.")]
         public string Role { get; set; } = string.Empty;
 
-        // Required only when Role = Patient
+        // Patient fields
         [Display(Name = "Phone Number")]
         public string? Phone { get; set; }
 
-        // Required only when Role = Patient
         [Display(Name = "Date of Birth")]
         [DataType(DataType.Date)]
         public DateOnly? Dob { get; set; }
+
+        // Doctor fields
+        [Display(Name = "Speciality")]
+        public string? Speciality { get; set; }
+
+        [Display(Name = "Consultation Fee")]
+        [Range(1, 100000, ErrorMessage = "Consultation fee must be greater than 0.")]
+        public decimal? ConsultationFee { get; set; }
+
+        [Display(Name = "Available for Appointments")]
+        public bool IsAvailable { get; set; } = true;
     }
 }

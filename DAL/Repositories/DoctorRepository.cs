@@ -32,7 +32,7 @@ namespace DAL.Repositories
             if (!string.IsNullOrWhiteSpace(speciality))
             {
                 query = query.Where(d =>
-                    Microsoft.EntityFrameworkCore.EF.Functions.Like(d.Speciality, $"%{speciality}%"));
+                    EF.Functions.Like(d.Speciality, $"%{speciality}%"));
             }
 
             if (minFee.HasValue)
@@ -59,6 +59,18 @@ namespace DAL.Repositories
         {
             return await _context.Doctors
                 .FirstOrDefaultAsync(d => d.DoctorId == id);
+        }
+
+        public async Task<Doctor?> GetDoctorByEmailAsync(string email)
+        {
+            return await _context.Doctors
+                .FirstOrDefaultAsync(d => d.Email == email);
+        }
+
+        public async Task<bool> EmailExistsAsync(string email)
+        {
+            return await _context.Doctors
+                .AnyAsync(d => d.Email == email);
         }
 
         public async Task AddDoctorAsync(Doctor doctor)

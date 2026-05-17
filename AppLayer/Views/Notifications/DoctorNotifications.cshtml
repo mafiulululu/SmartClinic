@@ -1,0 +1,54 @@
+﻿@model IEnumerable<DAL.EF.Table.Notification>
+
+@{
+    ViewData["Title"] = "Doctor Notifications";
+}
+
+<div class="container mt-4">
+    <h2>Doctor Notifications</h2>
+    <p class="text-muted">Appointment notifications related to your patients.</p>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            @if (Model.Any())
+            {
+                <table class="table table-bordered table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Notification ID</th>
+                            <th>Patient</th>
+                            <th>Message</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Time</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.NotificationId</td>
+                                <td>@item.Patient.FirstName @item.Patient.LastName</td>
+                                <td>@item.Message</td>
+                                <td>@item.Type</td>
+                                <td>
+                                    <span class="badge bg-info text-dark">
+                                        @item.SendStatus
+                                    </span>
+                                </td>
+                                <td>@item.ScheduledTime.ToString("yyyy-MM-dd hh:mm tt")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="alert alert-info mb-0">
+                    No notifications found.
+                </div>
+            }
+        </div>
+    </div>
+</div>

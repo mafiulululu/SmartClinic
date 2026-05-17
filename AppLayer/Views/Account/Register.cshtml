@@ -10,7 +10,7 @@
     <hr />
 
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-7">
             <form asp-action="Register" method="post">
                 @Html.AntiForgeryToken()
 
@@ -46,8 +46,12 @@
                 </div>
 
                 <div class="alert alert-info">
-                    Phone number and date of birth are required for Patient registration.
+                    For Patient registration, fill Phone and Date of Birth.
+                    <br />
+                    For Doctor registration, fill Speciality and Consultation Fee.
                 </div>
+
+                <h5 class="mt-4">Patient Information</h5>
 
                 <div class="mb-3">
                     <label asp-for="Phone" class="form-label">Phone Number</label>
@@ -59,6 +63,27 @@
                     <label asp-for="Dob" class="form-label">Date of Birth</label>
                     <input asp-for="Dob" type="date" class="form-control" />
                     <span asp-validation-for="Dob" class="text-danger"></span>
+                </div>
+
+                <h5 class="mt-4">Doctor Information</h5>
+
+                <div class="mb-3">
+                    <label asp-for="Speciality" class="form-label">Speciality</label>
+                    <input asp-for="Speciality" class="form-control" placeholder="Required for Doctor" />
+                    <span asp-validation-for="Speciality" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="ConsultationFee" class="form-label">Consultation Fee</label>
+                    <input asp-for="ConsultationFee" type="number" step="0.01" class="form-control" placeholder="Required for Doctor" />
+                    <span asp-validation-for="ConsultationFee" class="text-danger"></span>
+                </div>
+
+                <div class="form-check mb-4">
+                    <input asp-for="IsAvailable" class="form-check-input" />
+                    <label asp-for="IsAvailable" class="form-check-label">
+                        Available for Appointments
+                    </label>
                 </div>
 
                 <button type="submit" class="btn btn-success">

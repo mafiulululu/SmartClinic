@@ -103,17 +103,17 @@ namespace SmartClinic.Web.Controllers
                 FullName = model.FullName,
                 Email = model.Email,
                 Role = model.Role,
-
-                // Plain password goes to BLL.
-                // BLL will hash it before saving.
                 PasswordHash = model.Password
             };
 
             var result = await _authService.RegisterUserAsync(
-    newUser,
-    model.Phone,
-    model.Dob
-);
+                newUser,
+                model.Phone,
+                model.Dob,
+                model.Speciality,
+                model.ConsultationFee,
+                model.IsAvailable
+            );
 
             if (result.IsSuccess)
             {

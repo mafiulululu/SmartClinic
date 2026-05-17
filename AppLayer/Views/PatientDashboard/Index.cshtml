@@ -1,22 +1,21 @@
-﻿@{
-    ViewData["Title"] = "Patient Dashboard";
-}
+﻿<div class="mt-3">
+    <a asp-controller="Doctors" asp-action="Index" class="btn btn-primary">
+        View Doctors
+    </a>
 
-<div class="container mt-4">
-    <h2>Patient Dashboard</h2>
-    <p>Welcome, @User.Identity?.Name</p>
+    <a asp-controller="Appointments" asp-action="Create" class="btn btn-success ms-2">
+        Book Appointment
+    </a>
 
-    <div class="mt-3">
-        <a asp-controller="Doctors" asp-action="Index" class="btn btn-primary">
-            View Doctors
-        </a>
+    <a asp-controller="Appointments" asp-action="MyAppointments" class="btn btn-info ms-2">
+        My Appointments
+    </a>
 
-        <a asp-controller="Appointments" asp-action="Create" class="btn btn-success ms-2">
-            Book Appointment
-        </a>
+    <a asp-controller="Notifications" asp-action="MyNotifications" class="btn btn-warning ms-2">
+        My Notifications
+    </a>
 
-        <a asp-controller="Appointments" asp-action="MyAppointments" class="btn btn-info ms-2">
-            My Appointments
-        </a>
-    </div>
+    <a asp-controller="Notifications" asp-action="Index" class="btn btn-warning ms-2">
+        View Notifications
+    </a>
 </div>

@@ -6,10 +6,15 @@ namespace BLL.Services
     public class AppointmentService : IAppointmentService
     {
         private readonly IAppointmentRepository _appointmentRepository;
+        private readonly INotificationService _notificationService;
 
-        public AppointmentService(IAppointmentRepository appointmentRepository)
+        public AppointmentService(
+            IAppointmentRepository appointmentRepository,
+            INotificationService notificationService
+        )
         {
             _appointmentRepository = appointmentRepository;
+            _notificationService = notificationService;
         }
 
         public async Task<IEnumerable<Appointment>> GetAllAppointmentsAsync()
@@ -81,6 +86,12 @@ namespace BLL.Services
             };
 
             await _appointmentRepository.AddAppointmentAsync(appointment);
+
+            await _notificationService.CreateAppointmentBookingNotificationAsync(
+                patient,
+                doctor,
+                appointmentDate
+            );
 
             return (true, "Appointment booked successfully.");
         }

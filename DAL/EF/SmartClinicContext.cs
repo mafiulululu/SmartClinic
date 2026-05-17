@@ -117,7 +117,9 @@ public partial class SmartClinicContext : DbContext
 
             entity.ToTable("Notification");
 
-            entity.Property(e => e.NotificationId).HasColumnName("NotificationID");
+           entity.Property(e => e.NotificationId)
+             .ValueGeneratedOnAdd()
+             .HasColumnName("NotificationID");
             entity.Property(e => e.DoctorId).HasColumnName("DoctorID");
             entity.Property(e => e.Message).HasMaxLength(200);
             entity.Property(e => e.PatientId).HasColumnName("PatientID");

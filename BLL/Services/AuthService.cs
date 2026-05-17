@@ -7,6 +7,7 @@ namespace BLL.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly IPatientRepository _patientRepository;
+        private readonly IDoctorRepository _doctorRepository;
 
         private readonly string[] _allowedRoles =
         {
@@ -17,17 +18,22 @@ namespace BLL.Services
 
         public AuthService(
             IUserRepository userRepository,
-            IPatientRepository patientRepository
+            IPatientRepository patientRepository,
+            IDoctorRepository doctorRepository
         )
         {
             _userRepository = userRepository;
             _patientRepository = patientRepository;
+            _doctorRepository = doctorRepository;
         }
 
         public async Task<(bool IsSuccess, string Message)> RegisterUserAsync(
             User user,
             string? phone,
-            DateOnly? dob
+            DateOnly? dob,
+            string? speciality,
+            decimal? consultationFee,
+            bool isAvailable
         )
         {
             user.FullName = user.FullName.Trim();
@@ -62,22 +68,40 @@ namespace BLL.Services
                 }
             }
 
+            if (user.Role == "Doctor")
+            {
+                if (string.IsNullOrWhiteSpace(speciality))
+                {
+                    return (false, "Speciality is required for doctor registration.");
+                }
+
+                if (!consultationFee.HasValue || consultationFee.Value <= 0)
+                {
+                    return (false, "Consultation fee is required for doctor registration.");
+                }
+
+                if (await _doctorRepository.EmailExistsAsync(user.Email))
+                {
+                    return (false, "A doctor profile already exists with this email.");
+                }
+            }
+
             user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash);
             user.CreatedAt = DateTime.Now;
 
             await _userRepository.AddUserAsync(user);
 
+            var nameParts = user.FullName.Split(
+                ' ',
+                2,
+                StringSplitOptions.RemoveEmptyEntries
+            );
+
+            string firstName = nameParts.Length > 0 ? nameParts[0] : user.FullName;
+            string lastName = nameParts.Length > 1 ? nameParts[1] : "N/A";
+
             if (user.Role == "Patient")
             {
-                var nameParts = user.FullName.Split(
-                    ' ',
-                    2,
-                    StringSplitOptions.RemoveEmptyEntries
-                );
-
-                string firstName = nameParts.Length > 0 ? nameParts[0] : user.FullName;
-                string lastName = nameParts.Length > 1 ? nameParts[1] : "N/A";
-
                 var patient = new Patient
                 {
                     FirstName = firstName,
@@ -89,6 +113,21 @@ namespace BLL.Services
                 };
 
                 await _patientRepository.AddPatientAsync(patient);
+            }
+
+            if (user.Role == "Doctor")
+            {
+                var doctor = new Doctor
+                {
+                    FirstName = firstName,
+                    LastName = lastName,
+                    Email = user.Email,
+                    Speciality = speciality!.Trim(),
+                    ConsultationFee = consultationFee!.Value,
+                    IsAvailable = isAvailable
+                };
+
+                await _doctorRepository.AddDoctorAsync(doctor);
             }
 
             return (true, "Registration successful. Please login.");
