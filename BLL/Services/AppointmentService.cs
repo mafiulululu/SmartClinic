@@ -87,12 +87,6 @@ namespace BLL.Services
 
             await _appointmentRepository.AddAppointmentAsync(appointment);
 
-            await _notificationService.CreateAppointmentBookingNotificationAsync(
-                patient,
-                doctor,
-                appointmentDate
-            );
-
             return (true, "Appointment booked successfully.");
         }
     }
