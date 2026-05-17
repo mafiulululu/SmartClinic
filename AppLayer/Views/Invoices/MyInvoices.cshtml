@@ -1,5 +1,68 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model IEnumerable<DAL.EF.Table.Invoice>
+
 @{
+    ViewData["Title"] = "My Invoices";
 }
+
+<div class="container mt-4">
+    <h2>My Invoices</h2>
+    <p class="text-muted">View your appointment invoices and payment status.</p>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            @if (Model.Any())
+            {
+                <table class="table table-bordered table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Invoice ID</th>
+                            <th>Doctor</th>
+                            <th>Appointment Date</th>
+                            <th>Base Amount</th>
+                            <th>Tax</th>
+                            <th>Discount</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Generated At</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.InvoiceId</td>
+                                <td>Dr. @item.Appointment.Doctor.FirstName @item.Appointment.Doctor.LastName</td>
+                                <td>@item.Appointment.AppointmentDate.ToString("yyyy-MM-dd hh:mm tt")</td>
+                                <td>@item.BaseAmount.ToString("0.00")</td>
+                                <td>@item.TaxAmount.ToString("0.00")</td>
+                                <td>@item.Discount.ToString("0.00")</td>
+                                <td><strong>@item.TotalAmount.ToString("0.00")</strong></td>
+                                <td>
+                                    <span class="badge bg-danger">
+                                        @item.PaymentStatus
+                                    </span>
+                                </td>
+                                <td>@item.GeneratedAt.ToString("yyyy-MM-dd hh:mm tt")</td>
+                                <td>
+                                    <a asp-action="Details"
+                                       asp-route-id="@item.InvoiceId"
+                                       class="btn btn-sm btn-info">
+                                        Details
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="alert alert-info mb-0">
+                    No invoices found.
+                </div>
+            }
+        </div>
+    </div>
+</div>

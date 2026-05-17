@@ -1,4 +1,4 @@
-﻿using DAL.EF.Table;
+﻿using BLL.DTOs;
 using DAL.Repositories;
 
 namespace BLL.Services
@@ -12,12 +12,14 @@ namespace BLL.Services
             _doctorRepository = doctorRepository;
         }
 
-        public async Task<IEnumerable<Doctor>> GetDoctorsListAsync()
+        public async Task<IEnumerable<DoctorDTO>> GetDoctorsListAsync()
         {
-            return await _doctorRepository.GetAllDoctorsAsync();
+            var doctors = await _doctorRepository.GetAllDoctorsAsync();
+
+            return doctors.Select(MapperConfig.ToDoctorDTO).ToList();
         }
 
-        public async Task<IEnumerable<Doctor>> SearchDoctorsAsync(
+        public async Task<IEnumerable<DoctorDTO>> SearchDoctorsAsync(
             string? speciality,
             decimal? minFee,
             decimal? maxFee,
@@ -43,35 +45,48 @@ namespace BLL.Services
                 maxFee = temp;
             }
 
-            return await _doctorRepository.SearchDoctorsAsync(
+            var doctors = await _doctorRepository.SearchDoctorsAsync(
                 speciality,
                 minFee,
                 maxFee,
                 availableOnly
             );
+
+            return doctors.Select(MapperConfig.ToDoctorDTO).ToList();
         }
 
-        public async Task<Doctor?> GetDoctorByIdAsync(int id)
+        public async Task<DoctorDTO?> GetDoctorByIdAsync(int id)
         {
-            return await _doctorRepository.GetDoctorByIdAsync(id);
+            var doctor = await _doctorRepository.GetDoctorByIdAsync(id);
+
+            if (doctor == null)
+            {
+                return null;
+            }
+
+            return MapperConfig.ToDoctorDTO(doctor);
         }
 
-        public async Task CreateDoctorAsync(Doctor doctor)
+        public async Task CreateDoctorAsync(DoctorDTO doctorDto)
         {
-            doctor.FirstName = doctor.FirstName.Trim();
-            doctor.LastName = doctor.LastName.Trim();
-            doctor.Speciality = doctor.Speciality.Trim();
-            doctor.Email = doctor.Email.Trim().ToLower();
+            doctorDto.FirstName = doctorDto.FirstName.Trim();
+            doctorDto.LastName = doctorDto.LastName.Trim();
+            doctorDto.Speciality = doctorDto.Speciality.Trim();
+            doctorDto.Email = doctorDto.Email.Trim().ToLower();
+
+            var doctor = MapperConfig.ToDoctorEntity(doctorDto);
 
             await _doctorRepository.AddDoctorAsync(doctor);
         }
 
-        public async Task UpdateDoctorAsync(Doctor doctor)
+        public async Task UpdateDoctorAsync(DoctorDTO doctorDto)
         {
-            doctor.FirstName = doctor.FirstName.Trim();
-            doctor.LastName = doctor.LastName.Trim();
-            doctor.Speciality = doctor.Speciality.Trim();
-            doctor.Email = doctor.Email.Trim().ToLower();
+            doctorDto.FirstName = doctorDto.FirstName.Trim();
+            doctorDto.LastName = doctorDto.LastName.Trim();
+            doctorDto.Speciality = doctorDto.Speciality.Trim();
+            doctorDto.Email = doctorDto.Email.Trim().ToLower();
+
+            var doctor = MapperConfig.ToDoctorEntity(doctorDto);
 
             await _doctorRepository.UpdateDoctorAsync(doctor);
         }

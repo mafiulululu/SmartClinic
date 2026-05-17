@@ -39,9 +39,7 @@ public partial class SmartClinicContext : DbContext
 
             entity.ToTable("Appointment");
 
-            entity.Property(e => e.AppointmentId)
-                .ValueGeneratedOnAdd()
-                .HasColumnName("AppointmentID");
+            entity.Property(e => e.AppointmentId).HasColumnName("AppointmentID");
             entity.Property(e => e.AppointmentDate).HasColumnType("datetime");
             entity.Property(e => e.DoctorId).HasColumnName("DoctorID");
             entity.Property(e => e.PatientId).HasColumnName("PatientID");
@@ -117,9 +115,7 @@ public partial class SmartClinicContext : DbContext
 
             entity.ToTable("Notification");
 
-           entity.Property(e => e.NotificationId)
-             .ValueGeneratedOnAdd()
-             .HasColumnName("NotificationID");
+            entity.Property(e => e.NotificationId).HasColumnName("NotificationID");
             entity.Property(e => e.DoctorId).HasColumnName("DoctorID");
             entity.Property(e => e.Message).HasMaxLength(200);
             entity.Property(e => e.PatientId).HasColumnName("PatientID");
@@ -144,33 +140,26 @@ public partial class SmartClinicContext : DbContext
 
         modelBuilder.Entity<Patient>(entity =>
         {
+            entity.HasKey(e => e.PatientId).HasName("PK__Patient__970EC34692901830");
+
             entity.ToTable("Patient");
 
-            entity.Property(e => e.PatientId)
-                .ValueGeneratedOnAdd()
-                .HasColumnName("PatientID");
-
+            entity.Property(e => e.PatientId).HasColumnName("PatientID");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
-
-            entity.Property(e => e.Dob)
-                .HasColumnName("DOB");
-
+            entity.Property(e => e.Dob).HasColumnName("DOB");
             entity.Property(e => e.Email)
                 .HasMaxLength(50)
                 .IsUnicode(false);
-
             entity.Property(e => e.FirstName)
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("FirstNAME");
-
             entity.Property(e => e.LastName)
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("LastNAME");
-
             entity.Property(e => e.Phone)
                 .HasMaxLength(20)
                 .IsUnicode(false);

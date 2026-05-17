@@ -1,5 +1,5 @@
-﻿using BLL.Services;
-using DAL.EF.Table;
+﻿using BLL.DTOs;
+using BLL.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,7 +14,6 @@ namespace SmartClinic.Web.Controllers
             _doctorService = doctorService;
         }
 
-        // Admin, Doctor, Patient all can view doctor list
         [Authorize(Roles = "Admin,Doctor,Patient")]
         public async Task<IActionResult> Index(
             string? speciality,
@@ -38,7 +37,6 @@ namespace SmartClinic.Web.Controllers
             return View(doctors);
         }
 
-        // Only Admin can add doctor
         [Authorize(Roles = "Admin")]
         [HttpGet]
         public IActionResult Create()
@@ -49,23 +47,20 @@ namespace SmartClinic.Web.Controllers
         [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Doctor doctor)
+        public async Task<IActionResult> Create(DoctorDTO doctorDto)
         {
             ModelState.Remove("DoctorId");
-            ModelState.Remove("Appointments");
-            ModelState.Remove("Notifications");
 
             if (ModelState.IsValid)
             {
-                await _doctorService.CreateDoctorAsync(doctor);
+                await _doctorService.CreateDoctorAsync(doctorDto);
                 TempData["SuccessMessage"] = "Doctor added successfully.";
                 return RedirectToAction(nameof(Index));
             }
 
-            return View(doctor);
+            return View(doctorDto);
         }
 
-        // Only Admin can edit doctor
         [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
@@ -83,27 +78,23 @@ namespace SmartClinic.Web.Controllers
         [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Doctor doctor)
+        public async Task<IActionResult> Edit(int id, DoctorDTO doctorDto)
         {
-            if (id != doctor.DoctorId)
+            if (id != doctorDto.DoctorId)
             {
                 return BadRequest();
             }
 
-            ModelState.Remove("Appointments");
-            ModelState.Remove("Notifications");
-
             if (ModelState.IsValid)
             {
-                await _doctorService.UpdateDoctorAsync(doctor);
-                TempData["SuccessMessage"] = "Doctor updated successfully.";
+                await _doctorService.UpdateDoctorAsync(doctorDto);
+                TempData["SuccessMessage"] = "Doctor information updated successfully.";
                 return RedirectToAction(nameof(Index));
             }
 
-            return View(doctor);
+            return View(doctorDto);
         }
 
-        // Only Admin can delete doctor
         [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> Delete(int id)

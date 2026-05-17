@@ -1,5 +1,5 @@
-﻿using BLL.Services;
-using DAL.EF.Table;
+﻿using BLL.DTOs;
+using BLL.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,41 +15,35 @@ namespace SmartClinic.Web.Controllers
             _patientService = patientService;
         }
 
-        
         public async Task<IActionResult> Index()
         {
             var patients = await _patientService.GetPatientsListAsync();
             return View(patients);
         }
 
-        
         [HttpGet]
         public IActionResult Create()
         {
             return View();
         }
 
-        
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Patient patient)
+        public async Task<IActionResult> Create(PatientDTO patientDto)
         {
             ModelState.Remove("PatientId");
             ModelState.Remove("CreatedAt");
-            ModelState.Remove("Appointments");
-            ModelState.Remove("Notifications");
 
             if (ModelState.IsValid)
             {
-                await _patientService.CreatePatientAsync(patient);
+                await _patientService.CreatePatientAsync(patientDto);
                 TempData["SuccessMessage"] = "Patient added successfully.";
                 return RedirectToAction(nameof(Index));
             }
 
-            return View(patient);
+            return View(patientDto);
         }
 
-        
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
@@ -63,31 +57,27 @@ namespace SmartClinic.Web.Controllers
             return View(patient);
         }
 
- 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Patient patient)
+        public async Task<IActionResult> Edit(int id, PatientDTO patientDto)
         {
-            if (id != patient.PatientId)
+            if (id != patientDto.PatientId)
             {
                 return BadRequest();
             }
 
             ModelState.Remove("CreatedAt");
-            ModelState.Remove("Appointments");
-            ModelState.Remove("Notifications");
 
             if (ModelState.IsValid)
             {
-                await _patientService.UpdatePatientAsync(patient);
+                await _patientService.UpdatePatientAsync(patientDto);
                 TempData["SuccessMessage"] = "Patient information updated successfully.";
                 return RedirectToAction(nameof(Index));
             }
 
-            return View(patient);
+            return View(patientDto);
         }
 
-        
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
@@ -101,7 +91,6 @@ namespace SmartClinic.Web.Controllers
             return View(patient);
         }
 
-       
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

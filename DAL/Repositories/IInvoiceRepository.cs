@@ -1,10 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using DAL.EF.Table;
 
 namespace DAL.Repositories
 {
-    internal interface IInvoiceRepository
+    public interface IInvoiceRepository
     {
+        Task<IEnumerable<Invoice>> GetAllInvoicesAsync();
+        Task<IEnumerable<Invoice>> GetInvoicesByPatientEmailAsync(string email);
+        Task<Invoice?> GetInvoiceByIdAsync(int id);
+        Task AddInvoiceAsync(Invoice invoice);
     }
 }

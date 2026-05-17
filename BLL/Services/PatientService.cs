@@ -1,4 +1,4 @@
-﻿using DAL.EF.Table;
+﻿using BLL.DTOs;
 using DAL.Repositories;
 
 namespace BLL.Services
@@ -12,33 +12,46 @@ namespace BLL.Services
             _patientRepository = patientRepository;
         }
 
-        public async Task<IEnumerable<Patient>> GetPatientsListAsync()
+        public async Task<IEnumerable<PatientDTO>> GetPatientsListAsync()
         {
-            return await _patientRepository.GetAllPatientsAsync();
+            var patients = await _patientRepository.GetAllPatientsAsync();
+
+            return patients.Select(MapperConfig.ToPatientDTO).ToList();
         }
 
-        public async Task<Patient?> GetPatientByIdAsync(int id)
+        public async Task<PatientDTO?> GetPatientByIdAsync(int id)
         {
-            return await _patientRepository.GetPatientByIdAsync(id);
+            var patient = await _patientRepository.GetPatientByIdAsync(id);
+
+            if (patient == null)
+            {
+                return null;
+            }
+
+            return MapperConfig.ToPatientDTO(patient);
         }
 
-        public async Task CreatePatientAsync(Patient patient)
+        public async Task CreatePatientAsync(PatientDTO patientDto)
         {
-            patient.FirstName = patient.FirstName.Trim();
-            patient.LastName = patient.LastName.Trim();
-            patient.Email = patient.Email.Trim().ToLower();
-            patient.Phone = patient.Phone.Trim();
-            patient.CreatedAt = DateTime.Now;
+            patientDto.FirstName = patientDto.FirstName.Trim();
+            patientDto.LastName = patientDto.LastName.Trim();
+            patientDto.Email = patientDto.Email.Trim().ToLower();
+            patientDto.Phone = patientDto.Phone.Trim();
+            patientDto.CreatedAt = DateTime.Now;
+
+            var patient = MapperConfig.ToPatientEntity(patientDto);
 
             await _patientRepository.AddPatientAsync(patient);
         }
 
-        public async Task UpdatePatientAsync(Patient patient)
+        public async Task UpdatePatientAsync(PatientDTO patientDto)
         {
-            patient.FirstName = patient.FirstName.Trim();
-            patient.LastName = patient.LastName.Trim();
-            patient.Email = patient.Email.Trim().ToLower();
-            patient.Phone = patient.Phone.Trim();
+            patientDto.FirstName = patientDto.FirstName.Trim();
+            patientDto.LastName = patientDto.LastName.Trim();
+            patientDto.Email = patientDto.Email.Trim().ToLower();
+            patientDto.Phone = patientDto.Phone.Trim();
+
+            var patient = MapperConfig.ToPatientEntity(patientDto);
 
             await _patientRepository.UpdatePatientAsync(patient);
         }

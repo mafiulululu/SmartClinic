@@ -1,21 +1,24 @@
-﻿using DAL.EF.Table;
+﻿using BLL.DTOs;
 
 namespace BLL.Services
 {
     public interface IDoctorService
     {
-        Task<IEnumerable<Doctor>> GetDoctorsListAsync();
+        Task<IEnumerable<DoctorDTO>> GetDoctorsListAsync();
 
-        Task<IEnumerable<Doctor>> SearchDoctorsAsync(
+        Task<IEnumerable<DoctorDTO>> SearchDoctorsAsync(
             string? speciality,
             decimal? minFee,
             decimal? maxFee,
             bool availableOnly
         );
 
-        Task<Doctor?> GetDoctorByIdAsync(int id);
-        Task CreateDoctorAsync(Doctor doctor);
-        Task UpdateDoctorAsync(Doctor doctor);
+        Task<DoctorDTO?> GetDoctorByIdAsync(int id);
+
+        Task CreateDoctorAsync(DoctorDTO doctorDto);
+
+        Task UpdateDoctorAsync(DoctorDTO doctorDto);
+
         Task DeleteDoctorAsync(int id);
     }
 }

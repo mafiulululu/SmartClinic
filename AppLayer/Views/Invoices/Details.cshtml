@@ -1,5 +1,101 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model DAL.EF.Table.Invoice
+
 @{
+    ViewData["Title"] = "Invoice Details";
 }
+
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+            <h4 class="mb-0">Invoice Details</h4>
+        </div>
+
+        <div class="card-body">
+            <h5>Invoice Information</h5>
+
+            <dl class="row">
+                <dt class="col-sm-3">Invoice ID</dt>
+                <dd class="col-sm-9">@Model.InvoiceId</dd>
+
+                <dt class="col-sm-3">Appointment ID</dt>
+                <dd class="col-sm-9">@Model.AppointmentId</dd>
+
+                <dt class="col-sm-3">Generated At</dt>
+                <dd class="col-sm-9">@Model.GeneratedAt.ToString("yyyy-MM-dd hh:mm tt")</dd>
+
+                <dt class="col-sm-3">Payment Status</dt>
+                <dd class="col-sm-9">
+                    <span class="badge bg-danger">
+                        @Model.PaymentStatus
+                    </span>
+                </dd>
+            </dl>
+
+            <hr />
+
+            <h5>Patient & Doctor</h5>
+
+            <dl class="row">
+                <dt class="col-sm-3">Patient</dt>
+                <dd class="col-sm-9">
+                    @Model.Appointment.Patient.FirstName @Model.Appointment.Patient.LastName
+                </dd>
+
+                <dt class="col-sm-3">Doctor</dt>
+                <dd class="col-sm-9">
+                    Dr. @Model.Appointment.Doctor.FirstName @Model.Appointment.Doctor.LastName
+                </dd>
+
+                <dt class="col-sm-3">Speciality</dt>
+                <dd class="col-sm-9">@Model.Appointment.Doctor.Speciality</dd>
+
+                <dt class="col-sm-3">Appointment Date</dt>
+                <dd class="col-sm-9">
+                    @Model.Appointment.AppointmentDate.ToString("yyyy-MM-dd hh:mm tt")
+                </dd>
+            </dl>
+
+            <hr />
+
+            <h5>Billing Summary</h5>
+
+            <table class="table table-bordered w-50">
+                <tr>
+                    <th>Base Amount</th>
+                    <td>@Model.BaseAmount.ToString("0.00")</td>
+                </tr>
+
+                <tr>
+                    <th>Tax Amount 5%</th>
+                    <td>@Model.TaxAmount.ToString("0.00")</td>
+                </tr>
+
+                <tr>
+                    <th>Discount</th>
+                    <td>@Model.Discount.ToString("0.00")</td>
+                </tr>
+
+                <tr class="table-dark">
+                    <th>Total Amount</th>
+                    <td><strong>@Model.TotalAmount.ToString("0.00")</strong></td>
+                </tr>
+            </table>
+
+            @if (User.IsInRole("Admin"))
+            {
+                <a asp-action="Index" class="btn btn-secondary">
+                    Back to All Invoices
+                </a>
+            }
+            else
+            {
+                <a asp-action="MyInvoices" class="btn btn-secondary">
+                    Back to My Invoices
+                </a>
+            }
+            <a asp-controller="Invoices" asp-action="MyInvoices" class="btn btn-dark ms-2">
+                My Invoices
+            </a>
+        </div>
+    </div>
+</div>

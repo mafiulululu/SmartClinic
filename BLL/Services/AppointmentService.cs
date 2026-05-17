@@ -7,14 +7,17 @@ namespace BLL.Services
     {
         private readonly IAppointmentRepository _appointmentRepository;
         private readonly INotificationService _notificationService;
+        private readonly IInvoiceService _invoiceService;
 
         public AppointmentService(
             IAppointmentRepository appointmentRepository,
-            INotificationService notificationService
+            INotificationService notificationService,
+            IInvoiceService invoiceService
         )
         {
             _appointmentRepository = appointmentRepository;
             _notificationService = notificationService;
+            _invoiceService = invoiceService;
         }
 
         public async Task<IEnumerable<Appointment>> GetAllAppointmentsAsync()
@@ -87,7 +90,18 @@ namespace BLL.Services
 
             await _appointmentRepository.AddAppointmentAsync(appointment);
 
-            return (true, "Appointment booked successfully.");
+            await _notificationService.CreateAppointmentBookingNotificationAsync(
+                patient,
+                doctor,
+                appointmentDate
+            );
+
+            await _invoiceService.CreateInvoiceForAppointmentAsync(
+                appointment.AppointmentId,
+                doctor.ConsultationFee
+            );
+
+            return (true, "Appointment booked successfully. Invoice has been generated.");
         }
     }
 }

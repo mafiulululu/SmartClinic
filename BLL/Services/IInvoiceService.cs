@@ -1,10 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using DAL.EF.Table;
 
 namespace BLL.Services
 {
-    internal interface IInvoiceService
+    public interface IInvoiceService
     {
+        Task<IEnumerable<Invoice>> GetAllInvoicesAsync();
+        Task<IEnumerable<Invoice>> GetPatientInvoicesAsync(string patientEmail);
+        Task<Invoice?> GetInvoiceByIdAsync(int id);
+
+        Task CreateInvoiceForAppointmentAsync(
+            int appointmentId,
+            decimal consultationFee
+        );
     }
 }
