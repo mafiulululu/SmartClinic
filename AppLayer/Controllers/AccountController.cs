@@ -1,4 +1,5 @@
-﻿using BLL.Services;
+﻿using AppLayer.Models;
+using BLL.Services;
 using DAL.EF.Table;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -108,15 +109,19 @@ namespace SmartClinic.Web.Controllers
                 PasswordHash = model.Password
             };
 
-            bool isSuccess = await _authService.RegisterUserAsync(newUser);
+            var result = await _authService.RegisterUserAsync(
+    newUser,
+    model.Phone,
+    model.Dob
+);
 
-            if (isSuccess)
+            if (result.IsSuccess)
             {
-                TempData["SuccessMessage"] = "Registration successful. Please login.";
+                TempData["SuccessMessage"] = result.Message;
                 return RedirectToAction("Login", "Account");
             }
 
-            ModelState.AddModelError("Email", "This email is already registered or the role is invalid.");
+            ModelState.AddModelError("", result.Message);
             return View(model);
         }
 

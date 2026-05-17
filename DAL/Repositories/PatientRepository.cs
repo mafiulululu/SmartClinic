@@ -26,6 +26,18 @@ namespace DAL.Repositories
                 .FirstOrDefaultAsync(p => p.PatientId == id);
         }
 
+        public async Task<Patient?> GetPatientByEmailAsync(string email)
+        {
+            return await _context.Patients
+                .FirstOrDefaultAsync(p => p.Email == email);
+        }
+
+        public async Task<bool> EmailExistsAsync(string email)
+        {
+            return await _context.Patients
+                .AnyAsync(p => p.Email == email);
+        }
+
         public async Task AddPatientAsync(Patient patient)
         {
             await _context.Patients.AddAsync(patient);
