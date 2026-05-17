@@ -12,5 +12,7 @@ namespace BLL.Services
             int appointmentId,
             decimal consultationFee
         );
+
+        Task<(bool IsSuccess, string Message)> PayInvoiceAsync(int invoiceId);
     }
 }

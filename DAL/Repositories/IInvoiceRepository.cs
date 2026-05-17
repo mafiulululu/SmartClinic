@@ -8,5 +8,6 @@ namespace DAL.Repositories
         Task<IEnumerable<Invoice>> GetInvoicesByPatientEmailAsync(string email);
         Task<Invoice?> GetInvoiceByIdAsync(int id);
         Task AddInvoiceAsync(Invoice invoice);
+        Task UpdatePaymentStatusAsync(int invoiceId);
     }
 }

@@ -40,9 +40,14 @@
                                 <td>@item.Discount.ToString("0.00")</td>
                                 <td><strong>@item.TotalAmount.ToString("0.00")</strong></td>
                                 <td>
-                                    <span class="badge bg-danger">
-                                        @item.PaymentStatus
-                                    </span>
+                                    @if (item.PaymentStatus == "Paid")
+                                    {
+                                        <span class="badge bg-success">Payment Done</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">Unpaid</span>
+                                    }
                                 </td>
                                 <td>@item.GeneratedAt.ToString("yyyy-MM-dd hh:mm tt")</td>
                                 <td>
@@ -51,6 +56,15 @@
                                        class="btn btn-sm btn-info">
                                         Details
                                     </a>
+
+                                    @if (item.PaymentStatus != "Paid")
+                                    {
+                                        <a asp-action="Pay"
+                                           asp-route-id="@item.InvoiceId"
+                                           class="btn btn-sm btn-success ms-1">
+                                            Pay
+                                        </a>
+                                    }
                                 </td>
                             </tr>
                         }

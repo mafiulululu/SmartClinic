@@ -25,9 +25,27 @@
 
                 <dt class="col-sm-3">Payment Status</dt>
                 <dd class="col-sm-9">
-                    <span class="badge bg-danger">
-                        @Model.PaymentStatus
-                    </span>
+                    @if (Model.PaymentStatus == "Paid")
+                    {
+                        <span class="badge bg-success">
+                            Payment Done
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">
+                            Unpaid
+                        </span>
+
+                        @if (User.IsInRole("Patient"))
+                        {
+                            <a asp-action="Pay"
+                               asp-route-id="@Model.InvoiceId"
+                               class="btn btn-success btn-sm ms-2">
+                                Pay Now
+                            </a>
+                        }
+                    }
                 </dd>
             </dl>
 

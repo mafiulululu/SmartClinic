@@ -53,5 +53,20 @@ namespace DAL.Repositories
             await _context.Invoices.AddAsync(invoice);
             await _context.SaveChangesAsync();
         }
+
+        public async Task UpdatePaymentStatusAsync(int invoiceId)
+        {
+            var invoice = await _context.Invoices
+                .FirstOrDefaultAsync(i => i.InvoiceId == invoiceId);
+
+            if (invoice == null)
+            {
+                return;
+            }
+
+            invoice.PaymentStatus = "Paid";
+
+            await _context.SaveChangesAsync();
+        }
     }
 }

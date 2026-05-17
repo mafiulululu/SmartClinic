@@ -1,0 +1,62 @@
+﻿@model SmartClinic.Web.ViewModels.PaymentViewModel
+
+@{
+    ViewData["Title"] = "Pay Invoice";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+            <h4 class="mb-0">Pay Invoice</h4>
+        </div>
+
+        <div class="card-body">
+            <div class="alert alert-info">
+                A demo payment page for project presentation. Do not enter real card, bKash, or Nagad details.
+            </div>
+
+            <h5>Invoice #@Model.InvoiceId</h5>
+            <h3 class="mb-4">Total Amount: @Model.TotalAmount.ToString("0.00")</h3>
+
+            <form asp-action="Pay" method="post">
+                @Html.AntiForgeryToken()
+
+                <input type="hidden" asp-for="InvoiceId" />
+                <input type="hidden" asp-for="TotalAmount" />
+
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="PaymentMethod" class="form-label"></label>
+                    <select asp-for="PaymentMethod" class="form-select">
+                        <option value="">-- Select Payment Method --</option>
+                        <option value="Card">Online Card</option>
+                        <option value="bKash">bKash</option>
+                        <option value="Nagad">Nagad</option>
+                    </select>
+                    <span asp-validation-for="PaymentMethod" class="text-danger"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="TransactionReference" class="form-label"></label>
+                    <input asp-for="TransactionReference"
+                           class="form-control"
+                           placeholder="Example: DEMO-TXN-12345" />
+                    <span asp-validation-for="TransactionReference" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-success">
+                    Pay Now
+                </button>
+
+                <a asp-action="MyInvoices" class="btn btn-secondary ms-2">
+                    Cancel
+                </a>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

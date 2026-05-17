@@ -51,5 +51,24 @@ namespace BLL.Services
 
             await _invoiceRepository.AddInvoiceAsync(invoice);
         }
+
+        public async Task<(bool IsSuccess, string Message)> PayInvoiceAsync(int invoiceId)
+        {
+            var invoice = await _invoiceRepository.GetInvoiceByIdAsync(invoiceId);
+
+            if (invoice == null)
+            {
+                return (false, "Invoice not found.");
+            }
+
+            if (invoice.PaymentStatus == "Paid")
+            {
+                return (false, "This invoice is already paid.");
+            }
+
+            await _invoiceRepository.UpdatePaymentStatusAsync(invoiceId);
+
+            return (true, "Payment completed successfully.");
+        }
     }
 }
