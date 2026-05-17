@@ -98,6 +98,22 @@ namespace SmartClinic.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Pay(PaymentViewModel model)
         {
+            if (model.PaymentMethod == "bKash" || model.PaymentMethod == "Nagad")
+            {
+                if (string.IsNullOrWhiteSpace(model.MobileWalletNumber))
+                {
+                    ModelState.AddModelError("MobileWalletNumber", "Mobile number is required for bKash/Nagad payment.");
+                }
+            }
+
+            if (model.PaymentMethod == "Card")
+            {
+                if (string.IsNullOrWhiteSpace(model.TransactionReference))
+                {
+                    ModelState.AddModelError("TransactionReference", "Card transaction reference is required.");
+                }
+            }
+
             if (!ModelState.IsValid)
             {
                 return View(model);
@@ -125,7 +141,7 @@ namespace SmartClinic.Web.Controllers
                 return View(model);
             }
 
-            TempData["SuccessMessage"] = "Payment done successfully.";
+            TempData["SuccessMessage"] = $"Payment done successfully using {model.PaymentMethod}.";
             return RedirectToAction("Details", new { id = model.InvoiceId });
         }
     }

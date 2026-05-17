@@ -12,11 +12,11 @@
 
         <div class="card-body">
             <div class="alert alert-info">
-                A demo payment page for project presentation. Do not enter real card, bKash, or Nagad details.
+                This is a demo payment page for project presentation. Do not enter real PIN, OTP, or card details.
             </div>
 
             <h5>Invoice #@Model.InvoiceId</h5>
-            <h3 class="mb-4">Total Amount: @Model.TotalAmount.ToString("0.00")</h3>
+            <h3 class="mb-4">Total Amount: @Model.TotalAmount.ToString("0.00") BDT</h3>
 
             <form asp-action="Pay" method="post">
                 @Html.AntiForgeryToken()
@@ -28,7 +28,7 @@
 
                 <div class="mb-3">
                     <label asp-for="PaymentMethod" class="form-label"></label>
-                    <select asp-for="PaymentMethod" class="form-select">
+                    <select asp-for="PaymentMethod" class="form-select" id="paymentMethod">
                         <option value="">-- Select Payment Method --</option>
                         <option value="Card">Online Card</option>
                         <option value="bKash">bKash</option>
@@ -37,11 +37,25 @@
                     <span asp-validation-for="PaymentMethod" class="text-danger"></span>
                 </div>
 
-                <div class="mb-4">
+                <div class="mb-3" id="mobileWalletBox">
+                    <label asp-for="MobileWalletNumber" class="form-label"></label>
+                    <input asp-for="MobileWalletNumber"
+                           class="form-control"
+                           placeholder="Example: 01712345678" />
+                    <small class="text-muted">
+                        Enter a valid Bangladeshi mobile number starting with 01.
+                    </small>
+                    <span asp-validation-for="MobileWalletNumber" class="text-danger"></span>
+                </div>
+
+                <div class="mb-4" id="transactionBox">
                     <label asp-for="TransactionReference" class="form-label"></label>
                     <input asp-for="TransactionReference"
                            class="form-control"
                            placeholder="Example: DEMO-TXN-12345" />
+                    <small class="text-muted">
+                        For demo payment, you can enter any reference number.
+                    </small>
                     <span asp-validation-for="TransactionReference" class="text-danger"></span>
                 </div>
 
@@ -59,4 +73,28 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        function togglePaymentFields() {
+            const method = document.getElementById("paymentMethod").value;
+            const mobileWalletBox = document.getElementById("mobileWalletBox");
+            const transactionBox = document.getElementById("transactionBox");
+
+            if (method === "bKash" || method === "Nagad") {
+                mobileWalletBox.style.display = "block";
+                transactionBox.style.display = "none";
+            }
+            else if (method === "Card") {
+                mobileWalletBox.style.display = "none";
+                transactionBox.style.display = "block";
+            }
+            else {
+                mobileWalletBox.style.display = "none";
+                transactionBox.style.display = "none";
+            }
+        }
+
+        document.getElementById("paymentMethod").addEventListener("change", togglePaymentFields);
+        togglePaymentFields();
+    </script>
 }

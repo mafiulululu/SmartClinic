@@ -12,8 +12,11 @@ namespace SmartClinic.Web.ViewModels
         [Display(Name = "Payment Method")]
         public string PaymentMethod { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Please enter transaction/card reference.")]
+        [Display(Name = "bKash / Nagad Mobile Number")]
+        [RegularExpression(@"^01[3-9]\d{8}$", ErrorMessage = "Enter a valid Bangladeshi mobile number. Example: 01712345678")]
+        public string? MobileWalletNumber { get; set; }
+
         [Display(Name = "Transaction Reference")]
-        public string TransactionReference { get; set; } = string.Empty;
+        public string? TransactionReference { get; set; }
     }
 }
