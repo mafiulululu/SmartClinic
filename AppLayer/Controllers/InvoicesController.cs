@@ -10,10 +10,15 @@ namespace SmartClinic.Web.Controllers
     public class InvoicesController : Controller
     {
         private readonly IInvoiceService _invoiceService;
+        private readonly IInvoicePdfService _invoicePdfService;
 
-        public InvoicesController(IInvoiceService invoiceService)
+        public InvoicesController(
+            IInvoiceService invoiceService,
+            IInvoicePdfService invoicePdfService
+        )
         {
             _invoiceService = invoiceService;
+            _invoicePdfService = invoicePdfService;
         }
 
         [Authorize(Roles = "Admin")]
@@ -143,6 +148,38 @@ namespace SmartClinic.Web.Controllers
 
             TempData["SuccessMessage"] = $"Payment done successfully using {model.PaymentMethod}.";
             return RedirectToAction("Details", new { id = model.InvoiceId });
+        }
+
+        [Authorize(Roles = "Admin,Patient")]
+        public async Task<IActionResult> DownloadPdf(int id)
+        {
+            var invoice = await _invoiceService.GetInvoiceByIdAsync(id);
+
+            if (invoice == null)
+            {
+                return NotFound();
+            }
+
+            if (User.IsInRole("Patient"))
+            {
+                var email = User.FindFirstValue(ClaimTypes.Email);
+
+                if (invoice.Appointment.Patient.Email != email)
+                {
+                    return Forbid();
+                }
+            }
+
+            var pdfBytes = await _invoicePdfService.GenerateInvoicePdfAsync(id);
+
+            if (pdfBytes == null)
+            {
+                return NotFound();
+            }
+
+            string fileName = $"SmartClinic_Invoice_{id}.pdf";
+
+            return File(pdfBytes, "application/pdf", fileName);
         }
     }
 }

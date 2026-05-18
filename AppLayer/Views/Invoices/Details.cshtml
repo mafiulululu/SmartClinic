@@ -101,13 +101,25 @@
 
             @if (User.IsInRole("Admin"))
             {
-                <a asp-action="Index" class="btn btn-secondary">
+                <a asp-action="DownloadPdf"
+                   asp-route-id="@Model.InvoiceId"
+                   class="btn btn-primary">
+                    Download PDF
+                </a>
+
+                <a asp-action="Index" class="btn btn-secondary ms-2">
                     Back to All Invoices
                 </a>
             }
             else
             {
-                <a asp-action="MyInvoices" class="btn btn-secondary">
+                <a asp-action="DownloadPdf"
+                   asp-route-id="@Model.InvoiceId"
+                   class="btn btn-primary">
+                    Download PDF
+                </a>
+
+                <a asp-action="MyInvoices" class="btn btn-secondary ms-2">
                     Back to My Invoices
                 </a>
             }

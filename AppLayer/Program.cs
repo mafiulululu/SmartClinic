@@ -3,6 +3,7 @@ using DAL.EF;
 using DAL.Repositories;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using QuestPDF.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -49,6 +50,8 @@ builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+QuestPDF.Settings.License = LicenseType.Community;
+builder.Services.AddScoped<IInvoicePdfService, InvoicePdfService>();
 
 var app = builder.Build();
 
