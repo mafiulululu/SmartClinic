@@ -15,5 +15,7 @@ namespace DAL.Repositories
         Task<bool> IsDoctorDoubleBookedAsync(int doctorId, DateTime appointmentDate);
 
         Task AddAppointmentAsync(Appointment appointment);
+
+        Task UpdateAppointmentStatusAsync(int appointmentId, string status);
     }
 }

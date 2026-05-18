@@ -103,5 +103,45 @@ namespace BLL.Services
 
             return (true, "Appointment booked successfully. Invoice has been generated.");
         }
+
+        public async Task<Appointment?> GetAppointmentByIdAsync(int id)
+        {
+            return await _appointmentRepository.GetAppointmentByIdAsync(id);
+        }
+
+        public async Task<(bool IsSuccess, string Message)> UpdateAppointmentStatusAsync(
+            int appointmentId,
+            string status
+        )
+        {
+            var allowedStatuses = new List<string>
+            {
+                "Pending",
+                "Approved",
+                "Cancelled",
+                "Completed"
+            };
+
+            if (!allowedStatuses.Contains(status))
+            {
+                return (false, "Invalid appointment status selected.");
+            }
+
+            var appointment = await _appointmentRepository.GetAppointmentByIdAsync(appointmentId);
+
+            if (appointment == null)
+            {
+                return (false, "Appointment not found.");
+            }
+
+            if (appointment.Status == "Completed")
+            {
+                return (false, "Completed appointments cannot be changed.");
+            }
+
+            await _appointmentRepository.UpdateAppointmentStatusAsync(appointmentId, status);
+
+            return (true, "Appointment status updated successfully.");
+        }
     }
 }

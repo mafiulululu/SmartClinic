@@ -64,6 +64,10 @@ namespace SmartClinic.Web.Controllers
                 CookieAuthenticationDefaults.AuthenticationScheme,
                 principal
             );
+            HttpContext.Session.SetInt32("UserId", user.UserId);
+            HttpContext.Session.SetString("FullName", user.FullName);
+            HttpContext.Session.SetString("Email", user.Email);
+            HttpContext.Session.SetString("Role", user.Role);
 
             if (user.Role == "Admin")
             {
@@ -132,6 +136,8 @@ namespace SmartClinic.Web.Controllers
             await HttpContext.SignOutAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme
             );
+
+            HttpContext.Session.Clear();
 
             return RedirectToAction("Login", "Account");
         }

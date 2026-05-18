@@ -4,11 +4,27 @@
     ViewData["Title"] = "My Appointments";
 }
 
+@functions {
+    private string GetStatusBadgeClass(string status)
+    {
+        return status switch
+        {
+            "Pending" => "bg-warning text-dark",
+            "Approved" => "bg-primary",
+            "Cancelled" => "bg-danger",
+            "Completed" => "bg-success",
+            _ => "bg-secondary"
+        };
+    }
+}
+
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
             <h2>My Appointments</h2>
-            <p class="text-muted mb-0">View your appointment history and upcoming bookings.</p>
+            <p class="text-muted mb-0">
+                View your appointment history and current status.
+            </p>
         </div>
 
         <a asp-action="Create" class="btn btn-primary">
@@ -20,6 +36,13 @@
     {
         <div class="alert alert-success">
             @TempData["SuccessMessage"]
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["ErrorMessage"]
         </div>
     }
 
@@ -44,15 +67,28 @@
                         {
                             <tr>
                                 <td>@item.AppointmentId</td>
-                                <td>Dr. @item.Doctor.FirstName @item.Doctor.LastName</td>
-                                <td>@item.Doctor.Speciality</td>
-                                <td>@item.AppointmentDate.ToString("yyyy-MM-dd hh:mm tt")</td>
+
                                 <td>
-                                    <span class="badge bg-warning text-dark">
+                                    Dr. @item.Doctor.FirstName @item.Doctor.LastName
+                                </td>
+
+                                <td>
+                                    @item.Doctor.Speciality
+                                </td>
+
+                                <td>
+                                    @item.AppointmentDate.ToString("yyyy-MM-dd hh:mm tt")
+                                </td>
+
+                                <td>
+                                    <span class="badge @GetStatusBadgeClass(item.Status)">
                                         @item.Status
                                     </span>
                                 </td>
-                                <td>@item.SymptomsNotes</td>
+
+                                <td>
+                                    @item.SymptomsNotes
+                                </td>
                             </tr>
                         }
                     </tbody>

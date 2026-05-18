@@ -4,6 +4,20 @@
     ViewData["Title"] = "All Appointments";
 }
 
+@functions {
+    private string GetStatusBadgeClass(string status)
+    {
+        return status switch
+        {
+            "Pending" => "bg-warning text-dark",
+            "Approved" => "bg-primary",
+            "Cancelled" => "bg-danger",
+            "Completed" => "bg-success",
+            _ => "bg-secondary"
+        };
+    }
+}
+
 <div class="container mt-4">
     <h2>All Appointments</h2>
     <p class="text-muted">Admin overview of all clinic appointments.</p>
@@ -22,6 +36,7 @@
                             <th>Date & Time</th>
                             <th>Status</th>
                             <th>Symptoms / Notes</th>
+                            <th style="width: 260px;">Update Status</th>
                         </tr>
                     </thead>
 
@@ -30,16 +45,95 @@
                         {
                             <tr>
                                 <td>@item.AppointmentId</td>
-                                <td>@item.Patient.FirstName @item.Patient.LastName</td>
-                                <td>Dr. @item.Doctor.FirstName @item.Doctor.LastName</td>
-                                <td>@item.Doctor.Speciality</td>
-                                <td>@item.AppointmentDate.ToString("yyyy-MM-dd hh:mm tt")</td>
+
                                 <td>
-                                    <span class="badge bg-warning text-dark">
+                                    @item.Patient.FirstName @item.Patient.LastName
+                                </td>
+
+                                <td>
+                                    Dr. @item.Doctor.FirstName @item.Doctor.LastName
+                                </td>
+
+                                <td>
+                                    @item.Doctor.Speciality
+                                </td>
+
+                                <td>
+                                    @item.AppointmentDate.ToString("yyyy-MM-dd hh:mm tt")
+                                </td>
+
+                                <td>
+                                    <span class="badge @GetStatusBadgeClass(item.Status)">
                                         @item.Status
                                     </span>
                                 </td>
-                                <td>@item.SymptomsNotes</td>
+
+                                <td>
+                                    @item.SymptomsNotes
+                                </td>
+
+                                <td>
+                                    @if (item.Status != "Completed")
+                                    {
+                                        <form asp-controller="Appointments"
+                                              asp-action="UpdateStatus"
+                                              method="post"
+                                              class="d-flex gap-2">
+
+                                            @Html.AntiForgeryToken()
+
+                                            <input type="hidden"
+                                                   name="appointmentId"
+                                                   value="@item.AppointmentId" />
+
+                                            <select name="status" class="form-select form-select-sm">
+                                                @if (item.Status == "Pending")
+                                                {
+                                                    <option value="Pending" selected>Pending</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="Pending">Pending</option>
+                                                }
+
+                                                @if (item.Status == "Approved")
+                                                {
+                                                    <option value="Approved" selected>Approved</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="Approved">Approved</option>
+                                                }
+
+                                                @if (item.Status == "Cancelled")
+                                                {
+                                                    <option value="Cancelled" selected>Cancelled</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="Cancelled">Cancelled</option>
+                                                }
+
+                                                @if (item.Status == "Completed")
+                                                {
+                                                    <option value="Completed" selected>Completed</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="Completed">Completed</option>
+                                                }
+                                            </select>
+
+                                            <button type="submit" class="btn btn-sm btn-success">
+                                                Update
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Locked</span>
+                                    }
+                                </td>
                             </tr>
                         }
                     </tbody>

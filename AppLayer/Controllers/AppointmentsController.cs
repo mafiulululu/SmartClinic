@@ -105,6 +105,49 @@ namespace SmartClinic.Web.Controllers
             TempData["SuccessMessage"] = result.Message;
             return RedirectToAction(nameof(MyAppointments));
         }
+        [Authorize(Roles = "Admin,Doctor")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateStatus(int appointmentId, string status)
+        {
+            var appointment = await _appointmentService.GetAppointmentByIdAsync(appointmentId);
+
+            if (appointment == null)
+            {
+                return NotFound();
+            }
+
+            if (User.IsInRole("Doctor"))
+            {
+                var doctorEmail = User.FindFirstValue(ClaimTypes.Email);
+
+                if (appointment.Doctor.Email != doctorEmail)
+                {
+                    return Forbid();
+                }
+            }
+
+            var result = await _appointmentService.UpdateAppointmentStatusAsync(
+                appointmentId,
+                status
+            );
+
+            if (result.IsSuccess)
+            {
+                TempData["SuccessMessage"] = result.Message;
+            }
+            else
+            {
+                TempData["ErrorMessage"] = result.Message;
+            }
+
+            if (User.IsInRole("Admin"))
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            return RedirectToAction(nameof(DoctorAppointments));
+        }
 
         private async Task LoadDoctorsDropdown()
         {

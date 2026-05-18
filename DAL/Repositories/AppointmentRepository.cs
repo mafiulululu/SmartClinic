@@ -77,5 +77,20 @@ namespace DAL.Repositories
             await _context.Appointments.AddAsync(appointment);
             await _context.SaveChangesAsync();
         }
+
+        public async Task UpdateAppointmentStatusAsync(int appointmentId, string status)
+        {
+            var appointment = await _context.Appointments
+                .FirstOrDefaultAsync(a => a.AppointmentId == appointmentId);
+
+            if (appointment == null)
+            {
+                return;
+            }
+
+            appointment.Status = status;
+
+            await _context.SaveChangesAsync();
+        }
     }
 }
